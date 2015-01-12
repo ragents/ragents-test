@@ -1,0 +1,25 @@
+{
+    "name":               "ragents-test",
+    "version":            "0.1.0",
+    "description":        "tests for ragents",
+    "author":             "pmuellr",
+    "scripts": {
+      "test":             "node run-tests",
+      "jbuild":           "jbuild",
+      "watch":            "jbuild watch"
+    },
+    "homepage":           "https://github.com/ragents/ragents-test",
+    "license":            "Apache-2.0",
+    "repository": {
+      "type":             "git",
+      "url" :             "https://github.com/ragents/ragents-test.git"
+    },
+    "dependencies": {
+      "coffee-script":    "1.8.x",
+      "expect.js":        "0.3.x",
+      "jbuild":           "1.0.x",
+      "mocha":            "2.1.x",
+      "shelljs":          "0.3.x",
+      "underscore":       "1.7.x"
+    }
+}
