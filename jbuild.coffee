@@ -18,7 +18,10 @@ mkdir "-p", "tmp"
 
 #-------------------------------------------------------------------------------
 tasks.link = ->
+  rm "-rF",                "node_modules/ragents"
   ln "-sf", "../ragents",  "node_modules/ragents"
+
+  rm "-rF",                "node_modules/ragentsd"
   ln "-sf", "../ragentsd", "node_modules/ragentsd"
 
 #-------------------------------------------------------------------------------
