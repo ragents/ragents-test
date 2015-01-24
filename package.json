@@ -17,9 +17,14 @@
   "dependencies": {
     "coffee-script":    "1.8.x",
     "expect.js":        "0.3.x",
-    "jbuild":           "1.0.x",
+    "jquery":           "2.1.x",
     "mocha":            "2.1.x",
+    "ports":            "1.1.x",
     "shelljs":          "0.3.x",
     "underscore":       "1.7.x"
+  },
+  "devDependencies": {
+    "jbuild":           "1.0.x",
+    "node-inspector":   "0.8.x"
   }
 }

@@ -2,24 +2,31 @@
 
 expect  = require "expect.js"
 shelljs = require "shelljs"
+ports   = require "ports"
+
+ragents = require "ragents"
 
 pkg = require "../package.json"
 
+port   = ports.getPort pkg.name
+wsURL  = "ws://localhost:#{port}"
 server = "node_modules/ragentsd/lib/ragentsd"
+
 #-------------------------------------------------------------------------------
-describe "package", ->
+describe "ragents", ->
 
   serverProcess = null
 
   #-----------------------------------------------------------------------------
-  before (done)->
-    serverProcess = shelljs.exec "node #{server}", {async:true}, (code, output) ->
+  beforeEach (done)->
+    cmd = "node #{server} --port #{port}"
+    serverProcess = shelljs.exec cmd, {async:true}, (code, output) ->
       console.log "server exited: #{code} output:\n#{output}"
 
     setTimeout done, 1000
 
   #-----------------------------------------------------------------------------
-  after ->
+  afterEach ->
     return unless serverProcess?
 
     console.log "killing server"
@@ -27,8 +34,19 @@ describe "package", ->
     serverProcess = null
 
   #-----------------------------------------------------------------------------
-  it "TBD: server tests", ->
-    console.log "provide server tests"
+  it "createSession", (done) ->
+    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+
+      expect(err).to.be null
+      expect(session).not.to.eql undefined
+
+      session.getRemoteAgents (err, agents) ->
+        console.log "getRemoteAgents() returned"
+        expect(err).to.be null
+        expect(agents).not.to.eql undefined
+        expect(agents).to.have.length 0
+        console.log "really, zero ragents!"
+        done()
 
 #-------------------------------------------------------------------------------
 # Copyright IBM Corp. 2014

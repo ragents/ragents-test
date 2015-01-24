@@ -6,7 +6,8 @@ preReqFile = "tmp/pre-reqs-updated.txt"
 
 #-------------------------------------------------------------------------------
 tasks = defineTasks exports,
-  watch: "watch for source file changes, run tests"
+  watch: "watch for source file changes, build, run tests"
+  build: "run build"
   test:  "run tests"
   link:  "link local modules"
 
@@ -26,6 +27,8 @@ tasks.link = ->
 
 #-------------------------------------------------------------------------------
 tasks.build = ->
+  mkdir "-p", "tests/www/js"
+  coffee "--compile --bare --output tests/www/js --map tests/www/*.coffee"
   # nothing to do
 
 #-------------------------------------------------------------------------------
@@ -41,9 +44,6 @@ tasks.watch = ->
     process.exit 0
 
 #-------------------------------------------------------------------------------
-tasks.test = ->
-  log "running tests at #{new Date()}"
-
 tasks.test = ->
   log "running tests"
 
@@ -61,8 +61,13 @@ tasks.test = ->
 
   options = options.join " "
 
-  mocha "#{options} #{tests}", silent:true, (code, output) ->
-    console.log "test results:\n#{output}"
+  if true
+    mocha "#{options} #{tests}", silent:true, (code, output) ->
+      console.log "test results:\n#{output}"
+
+  else
+    node_debug "mocha #{options} #{tests}", silent:true, (code, output) ->
+      console.log "test results:\n#{output}"
 
 #-------------------------------------------------------------------------------
 watchIter = ->
