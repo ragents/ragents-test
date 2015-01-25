@@ -21,7 +21,7 @@ describe "ragents", ->
   beforeEach (done)->
     cmd = "node #{server} --port #{port}"
     serverProcess = shelljs.exec cmd, {async:true}, (code, output) ->
-      console.log "server exited: #{code} output:\n#{output}"
+      # console.log "server exited: #{code} output:\n#{output}"
 
     setTimeout done, 1000
 
@@ -29,7 +29,7 @@ describe "ragents", ->
   afterEach ->
     return unless serverProcess?
 
-    console.log "killing server"
+    console.log "killing ragentsd server"
     serverProcess.kill()
     serverProcess = null
 
@@ -41,12 +41,53 @@ describe "ragents", ->
       expect(session).not.to.eql undefined
 
       session.getRemoteAgents (err, agents) ->
-        console.log "getRemoteAgents() returned"
         expect(err).to.be null
         expect(agents).not.to.eql undefined
         expect(agents).to.have.length 0
-        console.log "really, zero ragents!"
         done()
+
+  #-----------------------------------------------------------------------------
+  it "createAgent", (done) ->
+    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+
+      expect(err).to.be null
+      expect(session).not.to.eql undefined
+
+      agentInfo =
+        name: "createAgent"
+        title: "blah blah"
+
+      session.createAgent agentInfo, (err, agent) ->
+        expect(err).to.be null
+        expect(agentInfo.name ).to.eql agent.info.name
+        expect(agentInfo.title).to.eql agent.info.title
+
+        session.getRemoteAgents (err, agents) ->
+          expect(err).to.be null
+          expect(agents).not.to.eql undefined
+          expect(agents).to.have.length 1
+          done()
+
+  #-----------------------------------------------------------------------------
+  it "createAgent event", (done) ->
+    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+
+      expect(err).to.be null
+      expect(session).not.to.eql undefined
+
+      agentInfo =
+        name: "createAgent"
+        title: "blah blah"
+
+      session.on "agentCreated", (agent) ->
+        expect(agentInfo.name ).to.eql agent.info.name
+        expect(agentInfo.title).to.eql agent.info.title
+        done()
+
+      session.createAgent agentInfo, (err, agent) ->
+        expect(err).to.be null
+        expect(agentInfo.name ).to.eql agent.info.name
+        expect(agentInfo.title).to.eql agent.info.title
 
 #-------------------------------------------------------------------------------
 # Copyright IBM Corp. 2014
