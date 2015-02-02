@@ -6,7 +6,7 @@
   "scripts": {
     "jbuild":           "jbuild",
     "watch":            "jbuild watch",
-    "test":             "jbuild test"
+    "test":             "jbuild test",
   },
   "homepage":           "https://github.com/ragents/ragents-test",
   "license":            "Apache-2.0",

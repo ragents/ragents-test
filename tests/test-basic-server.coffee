@@ -1,16 +1,22 @@
 # Licensed under the Apache License. See footer for details.
 
-expect  = require "expect.js"
-shelljs = require "shelljs"
-ports   = require "ports"
+inNode = typeof(Window) == "undefined"
 
-ragents = require "ragents"
+if inNode
+  expect  = require "expect.js"
+  shelljs = require "shelljs"
+  ports   = require "ports"
 
-pkg = require "../package.json"
+  ragents = require "ragents"
 
-port   = ports.getPort pkg.name
-wsURL  = "ws://localhost:#{port}"
-server = "node_modules/ragentsd/lib/ragentsd"
+  pkg = require "../package.json"
+
+  port   = ports.getPort pkg.name
+  wsURL  = "ws://localhost:#{port}"
+  server = "node_modules/ragentsd/lib/ragentsd"
+
+else
+  wsURL = location.origin.replace(/^http/, "ws")
 
 #-------------------------------------------------------------------------------
 describe "ragents", ->
@@ -18,7 +24,9 @@ describe "ragents", ->
   serverProcess = null
 
   #-----------------------------------------------------------------------------
-  beforeEach (done)->
+  beforeEach (done) ->
+    return done() unless inNode
+
     cmd = "node #{server} --port #{port}"
     serverProcess = shelljs.exec cmd, {async:true}, (code, output) ->
       # console.log "server exited: #{code} output:\n#{output}"
@@ -27,6 +35,7 @@ describe "ragents", ->
 
   #-----------------------------------------------------------------------------
   afterEach ->
+    return unless inNode
     return unless serverProcess?
 
     console.log "killing ragentsd server"
@@ -89,9 +98,26 @@ describe "ragents", ->
         expect(agentInfo.name ).to.eql agent.info.name
         expect(agentInfo.title).to.eql agent.info.title
 
+  #-----------------------------------------------------------------------------
+  it "agent.destroyed event", (done) ->
+    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+
+      expect(err).to.be null
+      expect(session).not.to.eql undefined
+
+      agentInfo =
+        name: "createAgent"
+        title: "blah blah"
+
+      session.on "agentDestroyed", (agent) ->
+        expect(agentInfo.name ).to.eql agent.info.name
+        expect(agentInfo.title).to.eql agent.info.title
+        done()
+
+      session.createAgent agentInfo, (err, agent) ->
+        agent.destroy()
+
 #-------------------------------------------------------------------------------
-# Copyright IBM Corp. 2014
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at

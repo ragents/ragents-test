@@ -1,5 +1,13 @@
 # Licensed under the Apache License. See footer for details.
 
+inNode = typeof(Window) == "undefined"
+
+if inNode
+  expect  = require "expect.js"
+  shelljs = require "shelljs"
+
+  ragents = require "ragents"
+
 #-------------------------------------------------------------------------------
 describe "package", ->
 
@@ -7,9 +15,11 @@ describe "package", ->
   it "version should be a semver", ->
     expect(ragents.version).to.match /^\d+\.\d+\.\d+(.*)$/
 
+  #-----------------------------------------------------------------------------
+  it "should export function `createSession()`", ->
+    expect(ragents.createSession).to.be.a "function"
+
 #-------------------------------------------------------------------------------
-# Copyright IBM Corp. 2014
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at

@@ -1,15 +1,20 @@
 # Licensed under the Apache License. See footer for details.
 
-pkg = require("./package.json")
+path = require "path"
+
+ports   = require "ports"
+shelljs = require "shelljs"
+
+pkg = require "./package.json"
 
 preReqFile = "tmp/pre-reqs-updated.txt"
 
 #-------------------------------------------------------------------------------
 tasks = defineTasks exports,
-  watch: "watch for source file changes, build, run tests"
-  build: "run build"
-  test:  "run tests"
-  link:  "link local modules"
+  watch:     "watch for source file changes, build, run tests"
+  build:     "run build"
+  test:      "run tests"
+  link:      "link local modules"
 
 WatchSpec = "tests tests/**/* #{preReqFile}"
 
@@ -28,8 +33,7 @@ tasks.link = ->
 #-------------------------------------------------------------------------------
 tasks.build = ->
   mkdir "-p", "tests/www/js"
-  coffee "--compile --bare --output tests/www/js --map tests/www/*.coffee"
-  # nothing to do
+  coffee "--compile --bare --output tests/www/js --map tests/*.coffee"
 
 #-------------------------------------------------------------------------------
 tasks.watch = ->
@@ -47,6 +51,17 @@ tasks.watch = ->
 tasks.test = ->
   log "running tests"
 
+  # start test server for www tests
+  port = ports.getPort "ragents-test-www"
+
+  log "to run tests, browse to http://localhost:#{port}/tests/www"
+
+  app = "node_modules/ragentsd/lib/ragentsd"
+  cmd = [app, "--port", port, "--www", "."]
+
+  server.start "tmp/server-www.pid", "node", cmd
+
+  # run node tests
   tests = "tests/test-*.coffee"
 
   options =
@@ -71,6 +86,8 @@ tasks.test = ->
 
 #-------------------------------------------------------------------------------
 watchIter = ->
+  log "in #{path.relative "../..", __dirname}"
+
   tasks.build()
   tasks.test()
 
