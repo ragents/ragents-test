@@ -57,6 +57,7 @@ describe("ragents", function() {
     });
   });
   it("createAgent", function(done) {
+    console.log(ragents);
     return ragents.createSession({
       url: wsURL,
       key: "0"

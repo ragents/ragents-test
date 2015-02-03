@@ -57,6 +57,7 @@ describe "ragents", ->
 
   #-----------------------------------------------------------------------------
   it "createAgent", (done) ->
+    console.log(ragents)
     ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
 
       expect(err).to.be null
