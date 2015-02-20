@@ -1,29 +1,27 @@
 # Licensed under the Apache License. See footer for details.
 
-path = require "path"
+require "cakex"
 
-ports   = require "ports"
-shelljs = require "shelljs"
+ports = require "ports"
 
 pkg = require "./package.json"
 
 preReqFile = "tmp/pre-reqs-updated.txt"
 
 #-------------------------------------------------------------------------------
-tasks = defineTasks exports,
-  watch:     "watch for source file changes, build, run tests"
-  build:     "run build"
-  test:      "run tests"
-  link:      "link local modules"
+task "watch", "watch for source file changes, build, run tests", -> taskWatch()
+task "build", "run build",                                       -> taskBuild()
+task "test",  "run tests",                                       -> taskTest()
+task "link",  "link local modules",                              -> taskLink()
 
-WatchSpec = "tests tests/**/* #{preReqFile}"
+WatchSpec = "tests/**/* #{preReqFile}"
 
 #-------------------------------------------------------------------------------
 mkdir "-p", "tmp"
 "".to preReqFile
 
 #-------------------------------------------------------------------------------
-tasks.link = ->
+taskLink = ->
   rm "-rF",                "node_modules/ragents"
   ln "-sf", "../ragents",  "node_modules/ragents"
 
@@ -31,24 +29,34 @@ tasks.link = ->
   ln "-sf", "../ragentsd", "node_modules/ragentsd"
 
 #-------------------------------------------------------------------------------
-tasks.build = ->
+taskBuild = ->
   mkdir "-p", "tests/www/js"
   coffee "--compile --bare --output tests/www/js --map tests/*.coffee"
 
 #-------------------------------------------------------------------------------
-tasks.watch = ->
+taskWatch = ->
   watchIter()
 
   watch
     files: WatchSpec.split " "
     run:   watchIter
 
-  watchFiles "jbuild.coffee" :->
-    log "jbuild file changed; exiting"
-    process.exit 0
+  watch
+    files: "Cakefile"
+    run: (file) ->
+      return unless file == "Cakefile"
+      log "Cakefile changed, exiting"
+      exit 0
 
 #-------------------------------------------------------------------------------
-tasks.test = ->
+watchIter = ->
+  log "in #{path.relative "../..", __dirname}"
+
+  taskBuild()
+  taskTest()
+
+#-------------------------------------------------------------------------------
+taskTest = ->
   log "running tests"
 
   # start test server for www tests
@@ -59,7 +67,7 @@ tasks.test = ->
   app = "node_modules/ragentsd/lib/ragentsd"
   cmd = [app, "--port", port, "--www", "."]
 
-  server.start "tmp/server-www.pid", "node", cmd
+  daemon.start "server-www", "node", cmd
 
   # run node tests
   tests = "tests/test-*.coffee"
@@ -76,20 +84,8 @@ tasks.test = ->
 
   options = options.join " "
 
-  if true
-    mocha "#{options} #{tests}", silent:true, (code, output) ->
-      console.log "test results:\n#{output}"
-
-  else
-    node_debug "mocha #{options} #{tests}", silent:true, (code, output) ->
-      console.log "test results:\n#{output}"
-
-#-------------------------------------------------------------------------------
-watchIter = ->
-  log "in #{path.relative "../..", __dirname}"
-
-  tasks.build()
-  tasks.test()
+  mocha "#{options} #{tests}", silent:true, (code, output) ->
+    log "test results:\n#{output}"
 
 #-------------------------------------------------------------------------------
 cleanDir = (dir) ->

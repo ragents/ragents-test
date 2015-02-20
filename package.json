@@ -4,9 +4,9 @@
   "description":        "tests for ragents",
   "author":             "pmuellr",
   "scripts": {
-    "jbuild":           "jbuild",
-    "watch":            "jbuild watch",
-    "test":             "jbuild test"
+    "cake":             "cake",
+    "watch":            "cake watch",
+    "test":             "cake test"
   },
   "homepage":           "https://github.com/ragents/ragents-test",
   "license":            "Apache-2.0",
@@ -24,7 +24,7 @@
     "underscore":       "1.7.x"
   },
   "devDependencies": {
-    "jbuild":           "1.0.x",
+    "cakex":            "0.1.x",
     "node-inspector":   "0.8.x"
   }
 }
