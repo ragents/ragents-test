@@ -17,5 +17,3 @@ describe("package", function() {
     return expect(ragents.createSession).to.be.a("function");
   });
 });
-
-//# sourceMappingURL=test-package.js.map

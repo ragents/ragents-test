@@ -6,7 +6,8 @@
   "scripts": {
     "cake":             "cake",
     "watch":            "cake watch",
-    "test":             "cake test"
+    "test":             "cake test",
+    "git-st":           "cake git-st"
   },
   "homepage":           "https://github.com/ragents/ragents-test",
   "license":            "Apache-2.0",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "coffee-script":    "1.8.x",
+    "debug":            "2.1.x",
     "expect.js":        "0.3.x",
     "jquery":           "2.1.x",
     "mocha":            "2.1.x",

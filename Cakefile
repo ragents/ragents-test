@@ -9,10 +9,11 @@ pkg = require "./package.json"
 preReqFile = "tmp/pre-reqs-updated.txt"
 
 #-------------------------------------------------------------------------------
-task "watch", "watch for source file changes, build, run tests", -> taskWatch()
-task "build", "run build",                                       -> taskBuild()
-task "test",  "run tests",                                       -> taskTest()
-task "link",  "link local modules",                              -> taskLink()
+task "watch",  "watch for source file changes, build, run tests", -> taskWatch()
+task "build",  "run build",                                       -> taskBuild()
+task "test",   "run tests",                                       -> taskTest()
+task "link",   "link modules",                                    -> taskLink()
+task "git-st", "run `git st` on projects",                        -> taskGitSt()
 
 WatchSpec = "tests/**/* #{preReqFile}"
 
@@ -21,17 +22,32 @@ mkdir "-p", "tmp"
 "".to preReqFile
 
 #-------------------------------------------------------------------------------
+taskGitSt = ->
+  gitSt "../ragents"
+  gitSt "../ragents-server"
+  gitSt "../ragentsd"
+  gitSt "../ragents-test"
+
+#-------------------------------------------------------------------------------
 taskLink = ->
-  rm "-rF",                "node_modules/ragents"
+
+  log "linking local ragents module"
+  rm "-rf",                "node_modules/ragents"
   ln "-sf", "../ragents",  "node_modules/ragents"
 
-  rm "-rF",                "node_modules/ragentsd"
+  log "linking local ragentsd module"
+  rm "-rf",                "node_modules/ragentsd"
   ln "-sf", "../ragentsd", "node_modules/ragentsd"
+
+  currDir = pwd()
+  cd "../ragentsd"
+  exec "npm run cake -- link"
+  cd currDir
 
 #-------------------------------------------------------------------------------
 taskBuild = ->
   mkdir "-p", "tests/www/js"
-  coffee "--compile --bare --output tests/www/js --map tests/*.coffee"
+  coffee "--compile --bare --output tests/www/js tests/*.coffee"
 
 #-------------------------------------------------------------------------------
 taskWatch = ->
@@ -59,16 +75,6 @@ watchIter = ->
 taskTest = ->
   log "running tests"
 
-  # start test server for www tests
-  port = ports.getPort "ragents-test-www"
-
-  log "to run tests, browse to http://localhost:#{port}/tests/www"
-
-  app = "node_modules/ragentsd/lib/ragentsd"
-  cmd = [app, "--port", port, "--www", "."]
-
-  daemon.start "server-www", "node", cmd
-
   # run node tests
   tests = "tests/test-*.coffee"
 
@@ -84,8 +90,33 @@ taskTest = ->
 
   options = options.join " "
 
-  mocha "#{options} #{tests}", silent:true, (code, output) ->
-    log "test results:\n#{output}"
+  process.env.DEBUG = "ragents:*"
+
+  mocha "#{options} #{tests}"
+
+  #mocha "#{options} #{tests}", silent:true, (code, output) ->
+  #  log "test results:\n#{output}"
+
+  # start test server for www tests
+  port = ports.getPort "ragents-test-www"
+
+  log "to run tests, browse to http://localhost:#{port}/tests/www"
+
+  app = "node_modules/ragentsd/lib/ragentsd"
+  cmd = [app, "--port", port, "--www", "."]
+
+  daemon.start "server-www", "node", cmd
+
+#-------------------------------------------------------------------------------
+gitSt = (dir) ->
+  currDir = pwd()
+  cd dir
+
+  log "in #{path.basename dir}"
+  exec "git status"
+  log()
+
+  cd currDir
 
 #-------------------------------------------------------------------------------
 cleanDir = (dir) ->

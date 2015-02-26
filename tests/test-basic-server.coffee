@@ -2,6 +2,8 @@
 
 inNode = typeof(Window) == "undefined"
 
+key = Date.now()
+
 if inNode
   expect  = require "expect.js"
   shelljs = require "shelljs"
@@ -12,11 +14,11 @@ if inNode
   pkg = require "../package.json"
 
   port   = ports.getPort pkg.name
-  wsURL  = "ws://localhost:#{port}"
+  url    = "ws://localhost:#{port}"
   server = "node_modules/ragentsd/lib/ragentsd"
 
 else
-  wsURL = location.origin.replace(/^http/, "ws")
+  url = location.origin.replace(/^http/, "ws")
 
 #-------------------------------------------------------------------------------
 describe "ragents", ->
@@ -44,7 +46,7 @@ describe "ragents", ->
 
   #-----------------------------------------------------------------------------
   it "createSession", (done) ->
-    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+    ragents.createSession {url, key}, (err, session) ->
 
       expect(err).to.be null
       expect(session).not.to.eql undefined
@@ -57,8 +59,7 @@ describe "ragents", ->
 
   #-----------------------------------------------------------------------------
   it "createAgent", (done) ->
-    console.log(ragents)
-    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+    ragents.createSession {url, key}, (err, session) ->
 
       expect(err).to.be null
       expect(session).not.to.eql undefined
@@ -80,7 +81,7 @@ describe "ragents", ->
 
   #-----------------------------------------------------------------------------
   it "createAgent event", (done) ->
-    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+    ragents.createSession {url, key}, (err, session) ->
 
       expect(err).to.be null
       expect(session).not.to.eql undefined
@@ -101,7 +102,7 @@ describe "ragents", ->
 
   #-----------------------------------------------------------------------------
   it "agent.destroyed event", (done) ->
-    ragents.createSession {url: wsURL, key: "0"}, (err, session) ->
+    ragents.createSession {url, key}, (err, session) ->
 
       expect(err).to.be null
       expect(session).not.to.eql undefined
