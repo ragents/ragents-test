@@ -19,6 +19,7 @@
     "coffee-script":    "1.8.x",
     "debug":            "2.1.x",
     "expect.js":        "0.3.x",
+    "express":          "4.12.x",
     "jquery":           "2.1.x",
     "mocha":            "2.1.x",
     "ports":            "1.1.x",
@@ -26,7 +27,6 @@
     "underscore":       "1.7.x"
   },
   "devDependencies": {
-    "cakex":            "0.1.x",
-    "node-inspector":   "0.8.x"
+    "cakex":            "0.1.x"
   }
 }

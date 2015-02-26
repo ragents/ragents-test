@@ -15,7 +15,7 @@ task "test",   "run tests",                                       -> taskTest()
 task "link",   "link modules",                                    -> taskLink()
 task "git-st", "run `git st` on projects",                        -> taskGitSt()
 
-WatchSpec = "tests/**/* #{preReqFile}"
+WatchSpec = "tests/**/* lib/**/* #{preReqFile}"
 
 #-------------------------------------------------------------------------------
 mkdir "-p", "tmp"
@@ -25,7 +25,6 @@ mkdir "-p", "tmp"
 taskGitSt = ->
   gitSt "../ragents"
   gitSt "../ragents-server"
-  gitSt "../ragentsd"
   gitSt "../ragents-test"
 
 #-------------------------------------------------------------------------------
@@ -35,14 +34,9 @@ taskLink = ->
   rm "-rf",                "node_modules/ragents"
   ln "-sf", "../ragents",  "node_modules/ragents"
 
-  log "linking local ragentsd module"
-  rm "-rf",                "node_modules/ragentsd"
-  ln "-sf", "../ragentsd", "node_modules/ragentsd"
-
-  currDir = pwd()
-  cd "../ragentsd"
-  exec "npm run cake -- link"
-  cd currDir
+  log "linking local ragents-server module"
+  rm "-rf",                      "node_modules/ragents-server"
+  ln "-sf", "../ragents-server", "node_modules/ragents-server"
 
 #-------------------------------------------------------------------------------
 taskBuild = ->
@@ -102,8 +96,8 @@ taskTest = ->
 
   log "to run tests, browse to http://localhost:#{port}/tests/www"
 
-  app = "node_modules/ragentsd/lib/ragentsd"
-  cmd = [app, "--port", port, "--www", "."]
+  app = "lib/server"
+  cmd = [app, port]
 
   daemon.start "server-www", "node", cmd
 

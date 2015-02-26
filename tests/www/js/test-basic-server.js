@@ -13,7 +13,7 @@ if (inNode) {
   pkg = require("../package.json");
   port = ports.getPort(pkg.name);
   url = "ws://localhost:" + port;
-  server = "node_modules/ragentsd/lib/ragentsd";
+  server = "node_modules/ragents-server/lib/ragentsd";
 } else {
   url = location.origin.replace(/^http/, "ws");
 }
