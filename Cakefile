@@ -84,7 +84,7 @@ taskTest = ->
 
   options = options.join " "
 
-  process.env.DEBUG = "ragents:*"
+  # process.env.DEBUG = "ragents:*"
 
   mocha "#{options} #{tests}"
 

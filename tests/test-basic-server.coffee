@@ -2,7 +2,8 @@
 
 inNode = typeof(Window) == "undefined"
 
-key = Date.now()
+key     = "to-be-calculated"
+counter = 0
 
 if inNode
   expect  = require "expect.js"
@@ -21,12 +22,14 @@ else
   url = location.origin.replace(/^http/, "ws")
 
 #-------------------------------------------------------------------------------
-describe "ragents", ->
+describe "basic server", ->
 
   serverProcess = null
 
   #-----------------------------------------------------------------------------
   beforeEach (done) ->
+    key = "#{Date.now()}-${counter++}"
+
     return done() unless inNode
 
     cmd = "node #{server} --port #{port}"
@@ -80,7 +83,7 @@ describe "ragents", ->
           done()
 
   #-----------------------------------------------------------------------------
-  it "createAgent event", (done) ->
+  it "agentCreated event", (done) ->
     ragents.createSession {url, key}, (err, session) ->
 
       expect(err).to.be null
@@ -101,14 +104,14 @@ describe "ragents", ->
         expect(agentInfo.title).to.eql agent.info.title
 
   #-----------------------------------------------------------------------------
-  it "agent.destroyed event", (done) ->
+  it "agentDestroyed event", (done) ->
     ragents.createSession {url, key}, (err, session) ->
 
       expect(err).to.be null
       expect(session).not.to.eql undefined
 
       agentInfo =
-        name: "createAgent"
+        name: "destroyAgent"
         title: "blah blah"
 
       session.on "agentDestroyed", (agent) ->
@@ -118,6 +121,42 @@ describe "ragents", ->
 
       session.createAgent agentInfo, (err, agent) ->
         agent.destroy()
+
+  #-----------------------------------------------------------------------------
+  it "getRemoteAgents", (done) ->
+    ragents.createSession {url, key}, (err, session) ->
+
+      expect(err).to.be null
+      expect(session).not.to.eql undefined
+
+      agentInfo =
+        name: "eventingAgent"
+        title: "blah blah"
+
+      session.createAgent agentInfo, (err, agent) ->
+        session.getRemoteAgents (err, ragents) ->
+          expect(ragents.length).to.eql 1
+
+          ragentInfo = ragents[0].info
+
+          expect(ragentInfo.name).to.eql  "eventingAgent"
+          expect(ragentInfo.title).to.eql "blah blah"
+
+          done()
+
+  #-----------------------------------------------------------------------------
+  it "serverClose", (done) ->
+    ragents.createSession {url, key}, (err, session) ->
+
+      session.on "close", ->
+        done()
+
+      unless inNode
+        return done()
+
+      serverProcess.kill()
+      serverProcess = null
+
 
 #-------------------------------------------------------------------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
