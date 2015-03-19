@@ -11,11 +11,11 @@ if (inNode) {
   expect = require("expect.js");
   shelljs = require("shelljs");
   ports = require("ports");
-  ragents = require("ragents");
+  ragents = require("../../ragents");
   pkg = require("../package.json");
   port = ports.getPort(pkg.name);
   url = "ws://localhost:" + port;
-  server = "node_modules/ragents-server/lib/ragentsd";
+  server = "../ragents-server/lib/ragentsd";
 } else {
   url = location.origin.replace(/^http/, "ws");
 }

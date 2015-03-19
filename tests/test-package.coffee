@@ -6,7 +6,7 @@ if inNode
   expect  = require "expect.js"
   shelljs = require "shelljs"
 
-  ragents = require "ragents"
+  ragents = require "../../ragents"
 
 #-------------------------------------------------------------------------------
 describe "package", ->

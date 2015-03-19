@@ -28,18 +28,8 @@ taskGitSt = ->
   gitSt "../ragents-test"
 
 #-------------------------------------------------------------------------------
-taskLink = ->
-
-  log "linking local ragents module"
-  rm "-rf",                "node_modules/ragents"
-  ln "-sf", "../ragents",  "node_modules/ragents"
-
-  log "linking local ragents-server module"
-  rm "-rf",                      "node_modules/ragents-server"
-  ln "-sf", "../ragents-server", "node_modules/ragents-server"
-
-#-------------------------------------------------------------------------------
 taskBuild = ->
+  cp "-f", "../ragents/www/ragents-browser.js", "tests/www"
   mkdir "-p", "tests/www/js"
   coffee "--compile --bare --output tests/www/js tests/*.coffee"
 
