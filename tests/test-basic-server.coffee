@@ -93,7 +93,7 @@ describe "basic server", ->
         name: "createAgent"
         title: "blah blah"
 
-      session.on "agentCreated", (agent) ->
+      session.on "ragentCreated", (agent) ->
         expect(agentInfo.name ).to.eql agent.info.name
         expect(agentInfo.title).to.eql agent.info.title
         done()
@@ -114,7 +114,7 @@ describe "basic server", ->
         name: "destroyAgent"
         title: "blah blah"
 
-      session.on "agentDestroyed", (agent) ->
+      session.on "ragentDestroyed", (agent) ->
         expect(agentInfo.name ).to.eql agent.info.name
         expect(agentInfo.title).to.eql agent.info.title
         done()
