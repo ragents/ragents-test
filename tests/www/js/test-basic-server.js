@@ -98,7 +98,7 @@ describe("basic server", function() {
         name: "createAgent",
         title: "blah blah"
       };
-      session.on("agentCreated", function(agent) {
+      session.on("ragentCreated", function(agent) {
         expect(agentInfo.name).to.eql(agent.info.name);
         expect(agentInfo.title).to.eql(agent.info.title);
         return done();
@@ -122,7 +122,7 @@ describe("basic server", function() {
         name: "destroyAgent",
         title: "blah blah"
       };
-      session.on("agentDestroyed", function(agent) {
+      session.on("ragentDestroyed", function(agent) {
         expect(agentInfo.name).to.eql(agent.info.name);
         expect(agentInfo.title).to.eql(agent.info.title);
         return done();
